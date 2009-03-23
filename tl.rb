@@ -63,3 +63,22 @@ get '/likings' do
     response.to_json unless response.empty?  
   
 end
+
+
+get '/external.css' do
+  mime :css, 'text/css'
+  content_type :css
+css = <<-EOD
+  div.twitterlikker_wrapper {
+    margin-top: 0.4em;
+    padding-top: 0.2em;
+    border-top: 1px solid #EEEEEE;
+    font-style: normal;
+  }
+  div.twitterlikker_wrapper a {
+    color: blue !important;
+    text-decoration: underline;
+  }
+  EOD
+  css
+end
