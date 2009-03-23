@@ -8,9 +8,12 @@
 // @version 0.1
 // ==/UserScript==
  
-var endpoint = 'http://0.0.0.0:4567/likings';
+var base_url = 'http://0.0.0.0:4567';
+var endpoint = base_url+'/likings';
+var styles_url = base_url+'/external.css'
 var me = $.trim($('p#me_name').text());
 var me_likings = [];
+
 
 $(function() {
   
@@ -22,7 +25,7 @@ $(function() {
 			// Use this loop to create the wrapper
 			var container = $(this).parent();		 
      	var status_id = _getStatusIdFromPermalink(this.href);     
-			var wrapper = $('<p></p>').attr('id','twitterlikker_wrapper_'+status_id);
+			var wrapper = $('<div></div>').attr('id','twitterlikker_wrapper_'+status_id).attr('class','twitterlikker_wrapper');
     	wrapper.appendTo(container);
   
   		permalinks.push(escape(this.href));
@@ -36,6 +39,7 @@ $(function() {
 				 attachLikeLink(this); 
 		 });
 		
+		attachStyles();
 		
 });
 
@@ -110,6 +114,7 @@ function findLikings(permalinks) {
 			if (response.responseText != '') {
 				l = eval("("+response.responseText+")");
 				$("li.status a.entry-date").each(function(i){
+					var me_likes_this = false;
 					var s = '';
 					var current = this.href;
 					var users_array = l[current];
@@ -118,6 +123,7 @@ function findLikings(permalinks) {
 						var indexofme = $.inArray(me,users_array)
 						if (indexofme != -1) {
 							users_array[indexofme] = 'you';
+							me_likes_this = true;
 						}
 
 						var total = users_array.length;
@@ -130,7 +136,9 @@ function findLikings(permalinks) {
 						p.appendTo($(this).parent());
 
 						var statusId = _getStatusIdFromPermalink(this.href);
-						$('a#liking_'+statusId).hide();
+						if (me_likes_this == true) {
+							$('a#liking_'+statusId).hide();
+						}
 
 					} // Cierre if
 
@@ -141,6 +149,15 @@ function findLikings(permalinks) {
 	}); // Cierre xmlhttprequest
 	
 } // Cierre función
+
+function attachStyles() {
+	var link = window.document.createElement('link');
+	link.rel = 'stylesheet';
+	link.type = 'text/css';
+	link.href = styles_url;
+	$("HEAD")[0].appendChild(link);
+}
+
 
 function _getStatusIdFromPermalink(permalink) {
 	return permalink.split('/').pop();
