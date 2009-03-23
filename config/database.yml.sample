@@ -1,0 +1,9 @@
+development: &defaults
+  :host: localhost
+  :adapter: mysql
+  :database: twitterlikker
+  :username: root
+  :password:  
+production:
+  <<: *defaults
+  
