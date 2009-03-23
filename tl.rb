@@ -1,21 +1,25 @@
 require 'rubygems'
 require 'sinatra'
-require 'dm-core'
+require 'datamapper'
 require 'json'
 require 'cgi'
 
-DataMapper.setup(:default, :host => 'localhost', :adapter => 'mysql', :username => 'root', :database => 'twitterlikker')
-  
+env = 'development'
+db_conf = YAML.load(File.new("config/database.yml"))
+DataMapper.setup(:default, db_conf[env])
+puts db_conf[env]
+
 class Liking
   include DataMapper::Resource
   property :id, Serial
-  property :who, String, :index => :unique
-  property :permalink, String, :index => :unique
+  property :who, String, :index => :unique, :length => 255
+  property :permalink, URI, :index => :unique, :length => 255
   property :created_at, DateTime
 end
 
+
 DataMapper::Logger.new(STDOUT, :debug)
-#DataMapper.auto_upgrade!
+#DataMapper.auto_migrate!
 
 post '/likings' do
   @liking = Liking.new
