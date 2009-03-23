@@ -25,6 +25,7 @@ post '/likings' do
   
   if @liking.save
     status(201)
+    @liking.permalink.to_json
   end
   
 end
