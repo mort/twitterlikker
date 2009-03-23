@@ -30,6 +30,14 @@ post '/likings' do
   
 end
 
+delete '/likings' do
+  @liking = Liking.first(:who => params[:who], :permalink => params[:permalink])
+  if @liking
+    @liking.destroy
+    status(204)
+  end
+end
+
 
 get '/likings' do
   puts params.inspect
