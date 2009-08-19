@@ -7,7 +7,6 @@ require 'cgi'
 env = 'development'
 db_conf = YAML.load(File.new("config/database.yml"))
 DataMapper.setup(:default, db_conf[env])
-puts db_conf[env]
 
 class Liking
   include DataMapper::Resource
