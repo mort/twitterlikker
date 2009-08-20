@@ -85,3 +85,8 @@ css = <<-EOD
   EOD
   css
 end
+
+get '/client_version' do
+  content_type :text
+  '0.1'
+end
