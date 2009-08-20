@@ -1,22 +1,35 @@
+var headers = parseHeaders(<><![CDATA[ 
 // ==UserScript==
 // @name Twitter Likker
 // @namespace http://thehyperrealists.com/works/twitterlikker
 // @description A basic 'like' functionality for Twitter
-// @include http://twitter.com/home
+// @include http://twitter.com/*
+// @include http://www.twitter.com/*
 // @author  mort (manuel@simplelogica.net)  
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.js
 // @version 0.1
 // ==/UserScript==
+]]></>.toXMLString().split(/[\r\n]+/).filter(/\/\/ @/)); 
  
-var base_url = 'http://0.0.0.0:4567';
+var base_url = 'http://192.168.2.3:4567';
 var endpoint = base_url+'/likings';
 var styles_url = base_url+'/external.css'
-var me = $.trim($('p#me_name').text());
+var me = $.trim($('span#me_name').text());
 var me_likings = [];
 
+function parseHeaders(all) {
+  var headers = {}, name, value;
+  for each (var line in all) {
+    [line, name, value] = line.match(/\/\/ @(\S+)\s*(.*)/);
+    headers[name] = value;
+  }
+  return headers;
+
+}
 
 $(function() {
   
+		checkForUpdates();
     var permalinks = [];
 		
 		// Collect tweet's permalinks
@@ -67,7 +80,6 @@ function attachUnlikeLink(t){
 
 
 function createLike(permalink){
-	
 	GM_xmlhttpRequest({
 	  method:"POST",
 	  url:endpoint,
@@ -161,4 +173,16 @@ function attachStyles() {
 
 function _getStatusIdFromPermalink(permalink) {
 	return permalink.split('/').pop();
+}
+
+function checkForUpdates(){
+	GM_xmlhttpRequest({
+    method:"GET",
+	  url:base_url+'/client_version',
+		onload:function(response) {
+			if (response.responseText > headers['version']) {
+				alert("You're using version "+headers['version']+" of the Twitterlikker script. There's a new version available ("+response.responseText+"). Please upgrade for unexpected delights.")
+			}
+		}
+	});
 }
